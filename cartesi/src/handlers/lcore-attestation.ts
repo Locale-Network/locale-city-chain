@@ -2,6 +2,10 @@
  * L{CORE} SDK - Attestation Handlers
  *
  * Handles attestation ingestion, status updates, and revocation.
+ *
+ * PRIVACY NOTE: Inspect handlers that return PII (owner_address, attestation details)
+ * use the encryption module to encrypt sensitive outputs. Only aggregate data
+ * (counts) is returned unencrypted.
  */
 
 import {
@@ -21,6 +25,7 @@ import {
   BucketInput,
   DataInput,
 } from '../lcore-db';
+import { createResponse, isEncryptionConfigured } from '../encryption';
 
 // ============= Advance Handlers =============
 
@@ -275,6 +280,9 @@ export const handleSupersedeAttestation = async (
 
 /**
  * Query attestation by ID or hash
+ *
+ * PRIVACY: This returns PII (owner_address, attestation details).
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectAttestation = async (
   query: InspectQuery
@@ -295,10 +303,11 @@ export const handleInspectAttestation = async (
     return { error: 'Attestation not found' };
   }
 
-  // Get buckets (public)
+  // Get buckets
   const buckets = getAttestationBuckets(attestation.id);
 
-  return {
+  // Build response data (contains PII)
+  const responseData = {
     attestation: {
       id: attestation.id,
       attestation_hash: attestation.attestation_hash,
@@ -317,10 +326,16 @@ export const handleInspectAttestation = async (
       value: b.bucket_value,
     })),
   };
+
+  // Encrypt if configured (this data contains PII)
+  return createResponse(responseData, true);
 };
 
 /**
  * Query attestations by owner
+ *
+ * PRIVACY: This returns PII (owner_address, attestation details).
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectAttestationsByOwner = async (
   query: InspectQuery
@@ -356,11 +371,15 @@ export const handleInspectAttestationsByOwner = async (
     };
   });
 
-  return {
+  // Build response data (contains PII)
+  const responseData = {
     owner,
     count: results.length,
     attestations: results,
   };
+
+  // Encrypt if configured (this data contains PII)
+  return createResponse(responseData, true);
 };
 
 // ============= Helpers =============

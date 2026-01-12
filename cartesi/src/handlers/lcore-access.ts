@@ -4,6 +4,9 @@
  * Handles access grant creation, revocation, and verification.
  * This is the gated access layer that dApps use to control who can
  * decrypt private attestation data.
+ *
+ * PRIVACY NOTE: Inspect handlers that return grant details or attestation data
+ * use the encryption module to encrypt sensitive outputs.
  */
 
 import {
@@ -22,6 +25,7 @@ import {
   getAttestationData,
   AccessGrantInput,
 } from '../lcore-db';
+import { createResponse } from '../encryption';
 
 // ============= Advance Handlers =============
 
@@ -246,6 +250,9 @@ export const handleInspectCheckAccess = async (
 
 /**
  * Get access grant by ID
+ *
+ * PRIVACY: This returns grant details which link entities.
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectGrant = async (
   query: InspectQuery
@@ -261,7 +268,7 @@ export const handleInspectGrant = async (
     return { error: 'Grant not found', grant_id: id };
   }
 
-  return {
+  const responseData = {
     grant: {
       id: grant.id,
       attestation_id: grant.attestation_id,
@@ -275,10 +282,16 @@ export const handleInspectGrant = async (
       status: grant.status,
     },
   };
+
+  // Encrypt - grant details contain entity relationships
+  return createResponse(responseData, true);
 };
 
 /**
  * Get all grants for an attestation
+ *
+ * PRIVACY: This returns grant details which link entities.
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectGrantsByAttestation = async (
   query: InspectQuery
@@ -291,7 +304,7 @@ export const handleInspectGrantsByAttestation = async (
 
   const grants = getGrantsByAttestation(attestation_id);
 
-  return {
+  const responseData = {
     attestation_id,
     count: grants.length,
     grants: grants.map(g => ({
@@ -304,10 +317,16 @@ export const handleInspectGrantsByAttestation = async (
       expires_at_input: g.expires_at_input,
     })),
   };
+
+  // Encrypt - grant details contain entity relationships
+  return createResponse(responseData, true);
 };
 
 /**
  * Get all grants for a grantee
+ *
+ * PRIVACY: This returns grant details which link entities.
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectGrantsByGrantee = async (
   query: InspectQuery
@@ -321,7 +340,7 @@ export const handleInspectGrantsByGrantee = async (
   const activeOnly = active_only !== 'false';
   const grants = getGrantsByGrantee(grantee.toLowerCase(), activeOnly);
 
-  return {
+  const responseData = {
     grantee,
     active_only: activeOnly,
     count: grants.length,
@@ -336,11 +355,17 @@ export const handleInspectGrantsByGrantee = async (
       expires_at_input: g.expires_at_input,
     })),
   };
+
+  // Encrypt - grant details contain entity relationships
+  return createResponse(responseData, true);
 };
 
 /**
  * Get encrypted data with access verification
  * This is the gated endpoint - requires valid access grant
+ *
+ * PRIVACY: This returns attestation data which is PII.
+ * Output is encrypted if encryption is configured.
  */
 export const handleInspectAttestationData = async (
   query: InspectQuery
@@ -394,7 +419,7 @@ export const handleInspectAttestationData = async (
     encryption_key_id: d.encryption_key_id,
   }));
 
-  return {
+  const responseData = {
     attestation_id,
     grantee,
     grant_id: grant?.id,
@@ -402,6 +427,9 @@ export const handleInspectAttestationData = async (
     data_count: dataForTransport.length,
     data: dataForTransport,
   };
+
+  // Encrypt - attestation data is PII
+  return createResponse(responseData, true);
 };
 
 // ============= Helpers =============

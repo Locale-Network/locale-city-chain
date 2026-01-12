@@ -9,9 +9,11 @@
  * - access_grants (gated access control)
  * - provider_schemas (modular schema registry)
  * - schema_admins (authorization whitelist)
+ * - encryption_config (encryption key management)
  */
 
 import { getDatabase } from './db';
+import { initEncryptionSchema } from './encryption';
 
 // ============= Types =============
 
@@ -258,6 +260,9 @@ export function initLCoreSchema(): void {
     CREATE INDEX IF NOT EXISTS idx_schema_provider ON provider_schemas(provider);
     CREATE INDEX IF NOT EXISTS idx_schema_domain ON provider_schemas(domain);
   `);
+
+  // Initialize encryption schema (separate table)
+  initEncryptionSchema();
 
   console.log('L{CORE} SDK schema initialized');
 }

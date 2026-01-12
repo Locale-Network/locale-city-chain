@@ -49,6 +49,13 @@ export {
   handleInspectBucketDefinition,
 } from './lcore-discovery';
 
+// ============= Encryption Handlers =============
+export {
+  handleSetEncryptionKey,
+  handleInspectEncryptionConfig,
+  handleInspectEncryptionStatus,
+} from './lcore-encryption';
+
 // ============= Route Configuration =============
 
 import { RouteConfig } from '../router';
@@ -94,6 +101,12 @@ import {
   handleInspectBucketDefinition,
 } from './lcore-discovery';
 
+import {
+  handleSetEncryptionKey,
+  handleInspectEncryptionConfig,
+  handleInspectEncryptionStatus,
+} from './lcore-encryption';
+
 /**
  * L{CORE} SDK Route Configuration
  *
@@ -116,6 +129,9 @@ export const lcoreRouteConfig: RouteConfig = {
     deprecate_provider_schema: handleDeprecateProviderSchema,
     add_schema_admin: handleAddSchemaAdmin,
     remove_schema_admin: handleRemoveSchemaAdmin,
+
+    // Encryption management (for admins)
+    set_encryption_key: handleSetEncryptionKey,
   },
   inspect: {
     // Attestation queries
@@ -148,6 +164,10 @@ export const lcoreRouteConfig: RouteConfig = {
     // Schema discovery
     available_providers: handleInspectAvailableProviders,
     bucket_definition: handleInspectBucketDefinition,
+
+    // Encryption queries
+    encryption_config: handleInspectEncryptionConfig,
+    encryption_status: handleInspectEncryptionStatus,
   },
 };
 
