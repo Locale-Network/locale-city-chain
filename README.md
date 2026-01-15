@@ -215,13 +215,11 @@ cd cartesi && npm run build
 npx @cartesi/cli deploy --network mainnet
 ```
 
-## API Reference
+## Documentation
 
-See [docs/api-reference.md](docs/api-reference.md) for complete API documentation.
-
-## Integration Guide
-
-See [docs/integration-guide.md](docs/integration-guide.md) for integration examples.
+See [attestor/docs/](attestor/docs/) for setup guides:
+- [QUICKSTART.md](attestor/docs/QUICKSTART.md) - 15-minute deployment guide
+- [EXTERNAL_SERVICES.md](attestor/docs/EXTERNAL_SERVICES.md) - EigenCloud & Cartesi setup
 
 ## Related Projects
 
