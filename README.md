@@ -52,7 +52,6 @@ locale-city-chain/
 │   │   │   └── lcore-discovery.ts    # Data discovery
 │   │   └── utils/
 │   └── package.json
-├── docs/                     # Public documentation
 └── README.md
 ```
 
@@ -217,9 +216,7 @@ npx @cartesi/cli deploy --network mainnet
 
 ## Documentation
 
-See [attestor/docs/](attestor/docs/) for setup guides:
-- [QUICKSTART.md](attestor/docs/QUICKSTART.md) - 15-minute deployment guide
-- [EXTERNAL_SERVICES.md](attestor/docs/EXTERNAL_SERVICES.md) - EigenCloud & Cartesi setup
+Full documentation available on GitBook (coming soon).
 
 ## Related Projects
 
