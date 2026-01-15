@@ -1,6 +1,4 @@
 # Environment files
-.env
-.env.*
 !.env.example
 !.env.sample
 
@@ -30,3 +28,4 @@ cert/
 
 # Internal documentation (keep only public docs/)
 memory-bank/
+config.bat
